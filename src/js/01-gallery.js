@@ -5,6 +5,8 @@ import "simplelightbox/dist/simple-lightbox.min.css"
 // Change code below this line
 
 console.log(galleryItems);
+const gallery = document.querySelector('.gallery');
+
 
 const createMarcup = galleryItems.map(({ preview, original, description }) => {
     return `<li class="gallery__item">
