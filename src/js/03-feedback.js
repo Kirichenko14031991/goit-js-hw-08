@@ -1,34 +1,52 @@
 import throttle from "lodash.throttle";
-
 const form = document.querySelector('.feedback-form');
-form.addEventListener('input', throttle(handlerInput, 500));
-form.addEventListener('click', load);
-form.addEventListener('submit', handlerSubmit);
+const emailInput = form.querySelector('input[name="email"]');
+const messageInput = form.querySelector('textarea[name="message"]');
 
-const user = {};
-refs.feedbackForm.addEventListener('submit', onSubmitForm);
-refs.feedbackForm.addEventListener('input', throttle(onInputForm, 500));
-localStorageHistory();
+const saveFormState = () => {
+  try {
+    const formState = {
+      email: emailInput.value,
+      message: messageInput.value
+    };
 
-function handlerInput(evt) {
-    user[evt.target.name] = evt.target.value;
-    localStorage.setItem("feedback-form-state", JSON.stringify(user));
+    localStorage.setItem('feedback-form-state', JSON.stringify(formState));
+  } catch (error) {
+    console.error('Failed to save form state:', error);
+  }
+};
+
+const restoreFormState = () => {
+  try {
+    const savedState = localStorage.getItem('feedback-form-state');
+
+    if (savedState) {
+      const formState = JSON.parse(savedState);
+      emailInput.value = formState.email;
+      messageInput.value = formState.message;
     }
+  } catch (error) {
+    console.error('Failed to restore form state:', error);
+  }
+};
 
-    function handlerSubmit() {
-        localStorage.clear()
-        }
-        
-        function load (evt) {
-            try {
-            
-            const savedSettings = localStorage.getItem("feedback-form-state");
-            const parsedSettings = JSON.parse(savedSettings)
-        
-            form.elements.email.value = parsedSettings.email 
-            form.elements.message.value = parsedSettings.message  
-        
-          } catch (error) {
-            console.error("Get state error: ", error.message);
-          }
-        };
+const handleSubmit = event => {
+  event.preventDefault();
+
+  try {
+    const email = emailInput.value;
+    const message = messageInput.value;
+
+    localStorage.removeItem('feedback-form-state');
+    emailInput.value = '';
+    messageInput.value = '';
+
+    console.log({ email, message });
+  } catch (error) {
+    console.error('Failed to handle form submission:', error);
+  }
+};
+
+form.addEventListener('input', throttle(saveFormState, 500));
+window.addEventListener('load', restoreFormState);
+form.addEventListener('submit', handleSubmit);
