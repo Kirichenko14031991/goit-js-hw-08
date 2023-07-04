@@ -2,6 +2,7 @@ import throttle from "lodash.throttle";
 const form = document.querySelector('.feedback-form');
 const emailInput = form.querySelector('input[name="email"]');
 const messageInput = form.querySelector('textarea[name="message"]');
+const submitButton = form.querySelector('button[type="submit"]');
 
 const saveFormState = () => {
   try {
@@ -33,10 +34,15 @@ const restoreFormState = () => {
 const handleSubmit = event => {
   event.preventDefault();
 
-  try {
-    const email = emailInput.value;
-    const message = messageInput.value;
+  const email = emailInput.value;
+  const message = messageInput.value;
 
+  if (email.trim() === '' || message.trim() === '') {
+    alert('Please fill in all fields');
+    return;
+  }
+
+  try {
     localStorage.removeItem('feedback-form-state');
     emailInput.value = '';
     messageInput.value = '';
